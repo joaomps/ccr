@@ -66,6 +66,15 @@ MR mode resolves the MR with `glab`, checks the MR head out into a detached git
 worktree (your current branch is never touched), reviews it, and removes the
 worktree afterward.
 
+### Limitations (v1)
+
+- Working-tree mode reviews tracked changes (`git diff HEAD`); brand-new
+  **untracked** files are not reviewed until staged or committed.
+- Findings are printed to the terminal; posting comments back to a GitLab MR is
+  not yet implemented (the MR diff refs are captured for when it is).
+- Default rules are Go-focused plus a generic catch-all; add `.ccr/rule.json`
+  for other languages.
+
 ## Rules
 
 Rules are matched to files by glob and resolved through a four-layer,
