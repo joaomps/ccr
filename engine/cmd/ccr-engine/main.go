@@ -25,6 +25,7 @@ func commands() map[string]command {
 		"rules":   cmdRules,
 		"plan":    cmdPlan,
 		"collect": cmdCollect,
+		"report":  cmdReport,
 	}
 }
 
