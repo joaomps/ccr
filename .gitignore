@@ -1,0 +1,5 @@
+ccr-engine
+/ccr-engine
+*.test
+.ccr/
+.DS_Store
