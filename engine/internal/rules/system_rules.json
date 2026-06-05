@@ -1,0 +1,27 @@
+{
+  "layers": [
+    {
+      "path": "**/*_test.go",
+      "rules": [
+        {"id": "go-test-quality", "severity": "low", "category": "tests", "guidance": "Flag tests with no assertions, t.Error where a nil-deref will panic before the assert is reached, or table tests that don't run subtests in a loop variable-safe way."}
+      ]
+    },
+    {
+      "path": "**/*.go",
+      "rules": [
+        {"id": "go-nil-deref", "severity": "high", "category": "correctness", "guidance": "Flag dereference of a value that may be nil without a prior check; common with functions returning (T*, error) where the pointer is used before checking err."},
+        {"id": "go-err-unchecked", "severity": "medium", "category": "correctness", "guidance": "Flag errors assigned to _ or ignored on calls that can fail meaningfully (I/O, parsing, network)."},
+        {"id": "go-goroutine-leak", "severity": "high", "category": "concurrency", "guidance": "Flag goroutines with no exit path or missing context cancellation, and channel sends/receives that may block forever."},
+        {"id": "go-data-race", "severity": "high", "category": "concurrency", "guidance": "Flag shared mutable state accessed from multiple goroutines without synchronization (mutex, channel, atomic)."},
+        {"id": "go-ctx-misuse", "severity": "medium", "category": "correctness", "guidance": "Flag context.Background()/TODO() in request paths, contexts stored in structs, or missing context propagation to downstream calls."},
+        {"id": "go-sql-injection", "severity": "high", "category": "security", "guidance": "Flag SQL built by string concatenation or fmt.Sprintf with user input; require parameterized queries."}
+      ]
+    },
+    {
+      "path": "**/*",
+      "rules": [
+        {"id": "generic-correctness", "severity": "medium", "category": "correctness", "guidance": "Flag clear logic errors, resource leaks (unclosed files/handles), missing error handling, and security issues introduced by this change."}
+      ]
+    }
+  ]
+}
