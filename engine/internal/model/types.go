@@ -70,6 +70,7 @@ type Plan struct {
 type RawFinding struct {
 	File         string `json:"file"`
 	Line         int    `json:"line"`
+	Code         string `json:"code"` // the offending line, copied verbatim from review_lines (aids recovery)
 	RuleID       string `json:"rule_id"`
 	Severity     string `json:"severity"`
 	Title        string `json:"title"`
