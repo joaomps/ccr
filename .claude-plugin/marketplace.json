@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ccr-marketplace",
+  "description": "Local marketplace for the ccr code-review plugin.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "ccr",
+      "description": "Hybrid code review: a deterministic Go engine plans, matches rules, numbers diff lines, and positions findings; Claude subagents review each bundle and score confidence. Working-tree, branch range, commit, or GitLab MR URL.",
+      "version": "0.1.0",
+      "source": "./plugin"
+    }
+  ]
+}
