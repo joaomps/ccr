@@ -47,3 +47,27 @@ func MergeBase(repo, a, b string) (string, error) {
 	out, err := run(repo, "merge-base", a, b)
 	return strings.TrimSpace(out), err
 }
+
+// Fetch fetches the given refs from origin.
+func Fetch(repo string, refs ...string) error {
+	_, err := run(repo, append([]string{"fetch", "-q", "origin"}, refs...)...)
+	return err
+}
+
+// WorktreeAdd creates a detached worktree at dir checked out to ref.
+func WorktreeAdd(repo, dir, ref string) error {
+	_, err := run(repo, "worktree", "add", "--detach", dir, ref)
+	return err
+}
+
+// WorktreeRemove force-removes a worktree.
+func WorktreeRemove(repo, dir string) error {
+	_, err := run(repo, "worktree", "remove", "--force", dir)
+	return err
+}
+
+// RemoteURL returns the origin remote URL.
+func RemoteURL(repo string) (string, error) {
+	out, err := run(repo, "remote", "get-url", "origin")
+	return strings.TrimSpace(out), err
+}
