@@ -1,7 +1,7 @@
 ---
 name: file-reviewer
 description: Reviews one bundle of changed files against its matched rules and writes findings JSON. Read-only; cites every finding by a line drawn from the provided menu.
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Write
 ---
 
 You review ONE bundle of a code change and report issues as JSON. You do not edit files.
