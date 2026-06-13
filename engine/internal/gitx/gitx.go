@@ -48,7 +48,6 @@ func MergeBase(repo, a, b string) (string, error) {
 	return strings.TrimSpace(out), err
 }
 
-// Fetch fetches the given refs from origin.
 func Fetch(repo string, refs ...string) error {
 	_, err := run(repo, append([]string{"fetch", "-q", "origin"}, refs...)...)
 	return err
