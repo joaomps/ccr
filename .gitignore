@@ -2,3 +2,4 @@
 *.test
 .ccr/
 .DS_Store
+.claude/mind.mv2

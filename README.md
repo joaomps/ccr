@@ -28,19 +28,24 @@ glue is the slash-command prompt.
 
 ## Install
 
-Build the engine and put it on your PATH:
+**1. Install the plugin** from the marketplace, inside Claude Code:
+
+```
+/plugin marketplace add joaomps/ccr
+/plugin install ccr@ccr-marketplace
+```
+
+**2. Build the engine** (requires [Go](https://go.dev/dl/) 1.21+) and put it on
+your PATH:
 
 ```sh
+git clone https://github.com/joaomps/ccr && cd ccr
 make install            # builds ccr-engine into ~/.local/bin
 # ensure ~/.local/bin is on PATH, or: make build && cp ccr-engine /usr/local/bin
 ```
 
-Install the plugin into Claude Code (project-local shown; or copy to `~/.claude`):
-
-```sh
-mkdir -p .claude
-cp -r plugin/commands plugin/agents .claude/
-```
+The plugin's `/ccr:review` command shells out to `ccr-engine`, so the binary
+must be on your PATH for reviews to run.
 
 Add `.ccr/` to the target repo's `.gitignore` (run artifacts live in `.ccr/tmp/`).
 
