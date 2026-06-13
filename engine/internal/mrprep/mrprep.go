@@ -120,7 +120,6 @@ func Prep(rawURL, repo string) (Result, error) {
 	}, nil
 }
 
-// Cleanup removes the worktree created by Prep.
 func Cleanup(repo, workdir string) error {
 	return gitx.WorktreeRemove(repo, workdir)
 }
