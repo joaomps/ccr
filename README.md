@@ -89,6 +89,20 @@ removes the worktree afterward. PR mode handles fork PRs via the
 - Default rules are Go-focused plus a generic catch-all; add `.ccr/rule.json`
   for other languages.
 
+### Possible future work
+
+Not committed to — directions the design leaves open:
+
+- **Post findings back** to the GitLab MR / GitHub PR as inline comments (diff
+  refs are already captured for this).
+- **Review untracked files** in working-tree mode (opt-in, since it widens scope).
+- **More built-in rule packs** (TS/JS, Python, Rust) beyond the Go-focused defaults.
+- **CI mode**: a non-interactive entrypoint that fails the build on findings
+  above a severity threshold.
+- **Per-PR rule overrides** via a `.ccr/rule.json` committed to the branch.
+- **SARIF / JSON export** for ingestion by other tools or code-scanning UIs.
+- **Severity/category filters** on the report (`--min-severity high`).
+
 ## Rules
 
 Rules are matched to files by glob and resolved through a four-layer,
