@@ -1,12 +1,12 @@
 ---
-description: Hybrid code review of the current changes (or a GitLab MR URL) — line-anchored findings with suggested fix diffs. Does not modify source files.
-argument-hint: "[--from REF --to REF | --commit SHA | <gitlab-mr-url>]"
+description: Hybrid code review of the current changes (or a GitLab MR / GitHub PR URL) — line-anchored findings with suggested fix diffs. Does not modify source files.
+argument-hint: "[--from REF --to REF | --commit SHA | <gitlab-mr-url> | <github-pr-url>]"
 allowed-tools: Bash, Read, Grep, Glob, Task
 ---
 
 Run a code review using the `ccr-engine` binary for the deterministic steps and the `file-reviewer` / `reflector` subagents for judgment. Determinism lives in the engine; you are the orchestrator gluing the steps together.
 
-**Prerequisite:** `ccr-engine` must be on PATH (`make install` from the ccr repo). For MR mode, `glab` must be installed and authenticated.
+**Prerequisite:** `ccr-engine` must be on PATH (`make install` from the ccr repo). For GitLab MR mode, `glab` must be installed and authenticated; for GitHub PR mode, `gh` must be installed and authenticated.
 
 Arguments: `$ARGUMENTS`
 
@@ -22,6 +22,10 @@ Use absolute paths everywhere below. Subagents do **not** reliably inherit this 
 ### Step 0 — Resolve input mode
 - **If `$ARGUMENTS` contains a GitLab MR URL** (matches `/-/merge_requests/`):
   1. Run `ccr-engine mr-prep --url <that-url>`.
+  2. Parse the JSON output. Capture `repo`, `workdir`, `base_sha`, `head_sha`.
+  3. Plan args = `--repo <workdir> --from <base_sha> --to <head_sha>`. Remove the worktree at the end.
+- **Else if `$ARGUMENTS` contains a GitHub PR URL** (matches `/pull/`):
+  1. Run `ccr-engine pr-prep --url <that-url>`.
   2. Parse the JSON output. Capture `repo`, `workdir`, `base_sha`, `head_sha`.
   3. Plan args = `--repo <workdir> --from <base_sha> --to <head_sha>`. Remove the worktree at the end.
 - **Otherwise**, plan args = `--repo "$(pwd)"` plus `$ARGUMENTS` passed through (`--from/--to`, `--commit`, or nothing for the working tree).
@@ -47,5 +51,5 @@ Use absolute paths everywhere below. Subagents do **not** reliably inherit this 
 - Present the rendered markdown to the user verbatim. If any bundle failed in Step 2, append a one-line note about partial coverage.
 
 ### Cleanup
-- If MR mode: `git -C <repo> worktree remove --force <workdir>`.
+- If MR or PR mode: `git -C <repo> worktree remove --force <workdir>`.
 - Leave `$RUNDIR` in place for inspection (it is gitignored).

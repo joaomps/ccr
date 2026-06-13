@@ -13,7 +13,7 @@ import (
 
 const version = "0.1.0"
 
-const usage = "usage: ccr-engine <plan|collect|report|rules|mr-prep|version> [flags]"
+const usage = "usage: ccr-engine <plan|collect|report|rules|mr-prep|pr-prep|version> [flags]"
 
 type command func(args []string, stdout, stderr io.Writer) int
 
@@ -27,6 +27,7 @@ func commands() map[string]command {
 		"collect": cmdCollect,
 		"report":  cmdReport,
 		"mr-prep": cmdMRPrep,
+		"pr-prep": cmdPRPrep,
 	}
 }
 

@@ -56,6 +56,12 @@ glab auth login                       # gitlab.com
 glab auth login --hostname <host>     # self-hosted
 ```
 
+For GitHub PR review, install and authenticate `gh`:
+
+```sh
+gh auth login                         # github.com or GitHub Enterprise
+```
+
 ## Usage
 
 In a Claude Code session inside the repo you want to review:
@@ -65,18 +71,21 @@ In a Claude Code session inside the repo you want to review:
 /ccr:review --from main --to my-feature       # branch range
 /ccr:review --commit a1b2c3d                  # a single commit
 /ccr:review https://gitlab.com/grp/proj/-/merge_requests/42   # a GitLab MR
+/ccr:review https://github.com/owner/repo/pull/42            # a GitHub PR
 ```
 
-MR mode resolves the MR with `glab`, checks the MR head out into a detached git
-worktree (your current branch is never touched), reviews it, and removes the
-worktree afterward.
+MR/PR mode resolves the request with `glab`/`gh`, checks the head out into a
+detached git worktree (your current branch is never touched), reviews it, and
+removes the worktree afterward. PR mode handles fork PRs via the
+`pull/<n>/head` ref and anchors the diff on the merge-base (GitHub's three-dot
+"Files changed" view).
 
 ### Limitations (v1)
 
 - Working-tree mode reviews tracked changes (`git diff HEAD`); brand-new
   **untracked** files are not reviewed until staged or committed.
-- Findings are printed to the terminal; posting comments back to a GitLab MR is
-  not yet implemented (the MR diff refs are captured for when it is).
+- Findings are printed to the terminal; posting comments back to a GitLab MR or
+  GitHub PR is not yet implemented (the diff refs are captured for when it is).
 - Default rules are Go-focused plus a generic catch-all; add `.ccr/rule.json`
   for other languages.
 
@@ -126,6 +135,7 @@ entry wins; an empty `rules` list marks files covered with no rules.
 | `report`   | Render findings as `md`, `text`, or `json` |
 | `rules check <file>` | Show which rule layer matches a path |
 | `mr-prep --url <url>` | Resolve a GitLab MR into a local worktree |
+| `pr-prep --url <url>` | Resolve a GitHub PR into a local worktree |
 
 ## Develop
 

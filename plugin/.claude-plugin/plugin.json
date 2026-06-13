@@ -1,6 +1,6 @@
 {
   "name": "ccr",
-  "description": "Hybrid code review. A deterministic Go engine selects files, matches rules, numbers diff lines, and positions findings; Claude subagents review each bundle and score confidence. Reviews working-tree changes, branch ranges, single commits, or a GitLab MR URL.",
+  "description": "Hybrid code review. A deterministic Go engine selects files, matches rules, numbers diff lines, and positions findings; Claude subagents review each bundle and score confidence. Reviews working-tree changes, branch ranges, single commits, a GitLab MR URL, or a GitHub PR URL.",
   "version": "0.1.0",
   "commands": "./commands",
   "agents": "./agents"
