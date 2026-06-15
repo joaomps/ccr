@@ -20,6 +20,13 @@ var ignorePatterns = []string{
 	"**/package-lock.json",
 	"**/yarn.lock",
 	"**/pnpm-lock.yaml",
+	"**/__pycache__/**",
+	"**/.venv/**",
+	"**/venv/**",
+	"**/*.ipynb",
+	"**/target/**",
+	"**/dbt_packages/**",
+	"**/*.parquet",
 }
 
 // Select partitions changed files into those worth reviewing and those skipped,

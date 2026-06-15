@@ -18,6 +18,36 @@
       ]
     },
     {
+      "path": "**/*.py",
+      "rules": [
+        {"id": "py-mutable-default", "severity": "medium", "category": "correctness", "guidance": "Flag mutable default arguments (def f(x=[]) or ={}/set()); the default is shared across calls and accumulates state. Use None and build inside."},
+        {"id": "py-bare-except", "severity": "medium", "category": "correctness", "guidance": "Flag bare `except:` or `except Exception` that swallows the error without re-raising or logging, and `except` that also catches KeyboardInterrupt/SystemExit."},
+        {"id": "py-resource-leak", "severity": "high", "category": "correctness", "guidance": "Flag open()/socket/db connections/locks not wrapped in `with` (or not closed in finally); file and handle leaks."},
+        {"id": "py-sql-injection", "severity": "high", "category": "security", "guidance": "Flag SQL built with f-strings, %, or .format() passed to cursor.execute; require parameterized queries (execute(sql, params))."},
+        {"id": "py-pandas-chained", "severity": "medium", "category": "correctness", "guidance": "Flag chained-indexing assignment (df[a][b] = ...) which triggers SettingWithCopy and may silently no-op; require .loc/.iloc. Flag inplace=True relied on for a return value, and == comparisons to NaN."}
+      ]
+    },
+    {
+      "path": "**/*.java",
+      "rules": [
+        {"id": "java-npe", "severity": "high", "category": "correctness", "guidance": "Flag dereference of a nullable return (Map.get, find*, getOrNull, external API) without a null or Optional check; flag Optional.get() without isPresent."},
+        {"id": "java-resource-leak", "severity": "high", "category": "correctness", "guidance": "Flag Closeable/Stream/Connection/InputStream/Reader created but not in try-with-resources or closed in finally."},
+        {"id": "java-string-eq", "severity": "medium", "category": "correctness", "guidance": "Flag == / != comparing String or boxed types (Integer, Long) instead of .equals; reference equality, not value equality."},
+        {"id": "java-swallowed-exc", "severity": "medium", "category": "correctness", "guidance": "Flag empty catch blocks or catches that only printStackTrace in service/request paths, losing the failure."},
+        {"id": "java-sql-injection", "severity": "high", "category": "security", "guidance": "Flag SQL built by string concatenation passed to Statement; require PreparedStatement with bound parameters."}
+      ]
+    },
+    {
+      "path": "**/*.sql",
+      "rules": [
+        {"id": "sql-select-star", "severity": "medium", "category": "efficiency", "guidance": "Flag SELECT * in views, models, or production queries — breaks on schema drift and scans every column on columnar warehouses (BigQuery, Snowflake) for direct cost."},
+        {"id": "sql-cross-join", "severity": "high", "category": "correctness", "guidance": "Flag implicit cross/cartesian joins: comma-separated tables in FROM, or JOIN with no ON / always-true ON — row explosion and wrong aggregates."},
+        {"id": "sql-null-logic", "severity": "medium", "category": "correctness", "guidance": "Flag NULL-unsafe logic: NOT IN against a subquery that can yield NULL (returns no rows), = NULL / != NULL instead of IS [NOT] NULL, and COUNT(col) vs COUNT(*) when col is nullable."},
+        {"id": "bq-partition-filter", "severity": "high", "category": "efficiency", "guidance": "BigQuery: flag queries over partitioned tables with no partition predicate (_PARTITIONDATE, _PARTITIONTIME, or the partition column) — full-table scan billed by bytes. Also flag SELECT * on large tables and unbounded date ranges."},
+        {"id": "snowflake-prune", "severity": "low", "category": "efficiency", "guidance": "Snowflake: flag scans of large tables with no pruning predicate on the cluster key, SELECT * from wide tables, and unbounded queries that defeat partition pruning (raising credits)."}
+      ]
+    },
+    {
       "path": "**/*",
       "rules": [
         {"id": "generic-correctness", "severity": "medium", "category": "correctness", "guidance": "Flag clear logic errors, resource leaks (unclosed files/handles), missing error handling, and security issues introduced by this change."}
