@@ -86,8 +86,9 @@ removes the worktree afterward. PR mode handles fork PRs via the
   **untracked** files are not reviewed until staged or committed.
 - Findings are printed to the terminal; posting comments back to a GitLab MR or
   GitHub PR is not yet implemented (the diff refs are captured for when it is).
-- Default rules are Go-focused plus a generic catch-all; add `.ccr/rule.json`
-  for other languages.
+- Built-in rules cover Go, Python, Java, and SQL (incl. BigQuery/Snowflake cost
+  rules), plus a generic catch-all; add `.ccr/rule.json` for more languages or
+  house style.
 
 ### Possible future work
 
@@ -96,7 +97,7 @@ Not committed to — directions the design leaves open:
 - **Post findings back** to the GitLab MR / GitHub PR as inline comments (diff
   refs are already captured for this).
 - **Review untracked files** in working-tree mode (opt-in, since it widens scope).
-- **More built-in rule packs** (TS/JS, Python, Rust) beyond the Go-focused defaults.
+- **More built-in rule packs** (TS/JS, Rust, Kotlin) beyond the current Go/Python/Java/SQL defaults.
 - **CI mode**: a non-interactive entrypoint that fails the build on findings
   above a severity threshold.
 - **Per-PR rule overrides** via a `.ccr/rule.json` committed to the branch.
@@ -113,7 +114,7 @@ first-match-wins chain (highest priority first):
 | 1        | `--rule <path>`                |
 | 2        | `<repo>/.ccr/rule.json`        |
 | 3        | `~/.ccr/rule.json`             |
-| 4        | built-in defaults (Go-focused) |
+| 4        | built-in defaults (Go, Python, Java, SQL) |
 
 Inspect what matches a file:
 
