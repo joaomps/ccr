@@ -76,3 +76,21 @@ func TestRenderJSON(t *testing.T) {
 		t.Fatalf("want 2, got %d", len(back.Findings))
 	}
 }
+
+func TestRenderMarkdownTiers(t *testing.T) {
+	p := sample()
+	p.Findings[0].Confidence = 0.6 // a.go:5 "because" -> review tier
+	p.Findings[1].Confidence = 0.9 // a.go:9 r2        -> suggested tier
+	out, _ := Render(p, 0.5, "md")
+	sug := strings.Index(out, "**Suggested — high confidence**")
+	rev := strings.Index(out, "**Review before acting — lower confidence**")
+	r2 := strings.Index(out, "`r2`")
+	because := strings.Index(out, "because")
+	if sug < 0 || rev < 0 {
+		t.Fatalf("missing tier headings:\n%s", out)
+	}
+	// high-confidence finding under Suggested, lower one under Review
+	if !(sug < r2 && r2 < rev && rev < because) {
+		t.Fatalf("tier placement wrong: sug=%d r2=%d rev=%d because=%d\n%s", sug, r2, rev, because, out)
+	}
+}

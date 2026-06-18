@@ -50,6 +50,14 @@ Use absolute paths everywhere below. Subagents do **not** reliably inherit this 
 - Run `ccr-engine report --reflected "$RUNDIR/reflected.json" --format md` (fall back to `--reflected "$RUNDIR/positioned.json"` if `reflected.json` is missing).
 - Present the rendered markdown to the user verbatim. If any bundle failed in Step 2, append a one-line note about partial coverage.
 
+### Step 5b — Summarize (narrative)
+After the verbatim engine report, add a short narrative synthesized from what you already have — the diff and bundle/rule map in `plan.json`, the findings in `reflected.json`. Keep each section to 1–3 lines and omit any with nothing real to say. Do **not** restate individual findings; this is orientation, not a second list.
+
+- **Summary** — what the change set does; notable new APIs, data structures, or dependencies; any breaking change.
+- **Impact / areas to watch** — existing code or callers affected; anything worth a follow-up ticket.
+- **Review focus areas** — the 2–4 files (priority order) a human should read most closely, and why.
+- **What this review didn't check** — make missing coverage visible: files in the diff that matched no rules, bundles that errored in Step 2, untracked files (working-tree mode reviews tracked changes only), and any pass judged out of scope (e.g. "no security pass — diff is docs-only").
+
 ### Cleanup
 - If MR or PR mode: `git -C <repo> worktree remove --force <workdir>`.
 - Leave `$RUNDIR` in place for inspection (it is gitignored).
