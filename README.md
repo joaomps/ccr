@@ -164,3 +164,46 @@ Engine layout: `internal/plan` (select, bundle, number, match), `internal/collec
 (validate, position, dedup), `internal/report`, `internal/rules`, `internal/diffparse`,
 `internal/gitx`, `internal/mrprep`. Design and plan docs live under
 `docs/superpowers/`.
+
+## Eval
+
+Measures review *quality*, not just engine correctness — so you can tell whether a
+prompt, rule, or threshold change helps or regresses instead of guessing. Two cheap
+metrics (no sandbox, no code execution):
+
+- **Recall** — review fixtures with a planted bug, check it gets flagged.
+- **Consistency** — review the same diff twice, compare the finding sets.
+
+Findings are keyed on `(file, line)`, scored against the *shipped* set
+(`ccr-engine report --format json --min-confidence 0.5` — what you actually see).
+Prerequisite: `jq`.
+
+```sh
+make eval-test   # model-free self-check of the scorers (fast, no review run, CI-safe)
+make eval        # review each eval/fixtures/* and print a recall scorecard
+```
+
+`make eval` drives a full headless review per fixture via `claude -p`
+(`--permission-mode bypassPermissions`; ccr is read-only and never runs the code
+under review). It spends your Claude subscription. If headless review is blocked in
+your setup, run `/ccr:review` on a fixture yourself and score the captured findings:
+
+```sh
+ccr-engine report --reflected <repo>/.ccr/tmp/<run>/reflected.json \
+  --format json --min-confidence 0.5 > shipped.json
+eval/recall.sh eval/fixtures/type-assert shipped.json
+eval/consistency.sh runA.json runB.json   # Jaccard of (file,line) sets, any two runs
+```
+
+**Add a fixture**: a dir under `eval/fixtures/<name>/` with `before/` and `after/`
+source trees (bug single-line-localizable in `after/`) and `expected.json` listing
+the head-side `(file, line)` of each planted bug.
+
+Two caveats, by design:
+
+- Planted-bug recall is a **regression tripwire, not a recall %** — "caught 2/3" is
+  signal; distrust any labelled percentage.
+- 2-run consistency measures **stability, not correctness** (a reliably-wrong
+  reviewer scores 1.000) and is one noisy sample. A real recall number needs
+  labelled open-source PRs (where review comments were later addressed) — not built
+  here.
