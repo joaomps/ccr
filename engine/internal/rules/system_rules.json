@@ -3,12 +3,13 @@
     {
       "path": "**/*_test.go",
       "rules": [
-        {"id": "go-test-quality", "severity": "low", "category": "tests", "guidance": "Flag tests with no assertions, t.Error where a nil-deref will panic before the assert is reached, or table tests that don't run subtests in a loop variable-safe way."}
+        {"id": "go-test-quality", "severity": "low", "category": "tests", "guidance": "Flag tests with no assertions, t.Error where a nil-deref will panic before the assert is reached, or table tests that don't run subtests in a loop variable-safe way. Go version: if go.mod targets Go 1.26+, new(v) takes a VALUE expression and returns a pointer to it (new(5) is a valid *int, NOT a type error); do not flag new(<value>) as a compile error. Also valid in 1.26+: range-over-func, per-iteration loop variables (no &v aliasing bug), and the min/max/clear builtins."}
       ]
     },
     {
       "path": "**/*.go",
       "rules": [
+        {"id": "go-lang-version", "severity": "low", "category": "correctness", "guidance": "Version-awareness, not a finding generator. If go.mod targets Go 1.26+, new(v) takes a VALUE expression and returns a pointer to it (new(5) is a valid *int, NOT a type error); range-over-func, per-iteration loop variables (no &v aliasing bug), and min/max/clear builtins are all valid. Do not flag these as errors."},
         {"id": "go-nil-deref", "severity": "high", "category": "correctness", "guidance": "Flag dereference of a value that may be nil without a prior check; common with functions returning (T*, error) where the pointer is used before checking err."},
         {"id": "go-err-unchecked", "severity": "medium", "category": "correctness", "guidance": "Flag errors assigned to _ or ignored on calls that can fail meaningfully (I/O, parsing, network)."},
         {"id": "go-goroutine-leak", "severity": "high", "category": "concurrency", "guidance": "Flag goroutines with no exit path or missing context cancellation, and channel sends/receives that may block forever."},

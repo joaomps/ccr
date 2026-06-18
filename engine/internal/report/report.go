@@ -84,6 +84,13 @@ func sortFindings(f []model.PositionedFinding) {
 	})
 }
 
+// highConfidence is the lower bound of the top ("Suggested") tier. The
+// --min-confidence flag is the lower bound for being shown at all.
+const highConfidence = 0.8
+
+// renderMarkdown groups kept findings into confidence tiers. When the reflector
+// did not score any finding (all Confidence == 0) it falls back to a single
+// untiered list, byte-identical to the pre-tier layout.
 func renderMarkdown(f []model.PositionedFinding, dropped []model.Dropped) string {
 	var b strings.Builder
 	high, med, low := counts(f)
@@ -93,26 +100,60 @@ func renderMarkdown(f []model.PositionedFinding, dropped []model.Dropped) string
 		b.WriteString("\nNo issues found.\n")
 		return b.String()
 	}
+
+	var suggested, review, unscored []model.PositionedFinding
+	for _, x := range f {
+		switch {
+		case x.Confidence == 0:
+			unscored = append(unscored, x)
+		case x.Confidence >= highConfidence:
+			suggested = append(suggested, x)
+		default:
+			review = append(review, x)
+		}
+	}
+
+	// Reflector did not run: keep the flat, untiered layout.
+	if len(unscored) == len(f) {
+		renderFindings(&b, f)
+		return b.String()
+	}
+
+	renderTier(&b, "Suggested — high confidence", suggested)
+	renderTier(&b, "Review before acting — lower confidence", review)
+	renderTier(&b, "Unscored — reflector did not score these", unscored)
+	return b.String()
+}
+
+func renderTier(b *strings.Builder, label string, f []model.PositionedFinding) {
+	if len(f) == 0 {
+		return
+	}
+	fmt.Fprintf(b, "\n---\n\n**%s**\n", label)
+	renderFindings(b, f)
+}
+
+// renderFindings writes per-file finding sections for an already-sorted slice.
+func renderFindings(b *strings.Builder, f []model.PositionedFinding) {
 	curFile := ""
 	for _, x := range f {
 		if x.File != curFile {
 			curFile = x.File
-			fmt.Fprintf(&b, "\n## %s\n", curFile)
+			fmt.Fprintf(b, "\n## %s\n", curFile)
 		}
 		approx := ""
 		if x.Anchor == "hunk-fallback" {
 			approx = "  _(approx)_"
 		}
-		fmt.Fprintf(&b, "\n### %s:%d — %s — %s  `%s`%s\n",
+		fmt.Fprintf(b, "\n### %s:%d — %s — %s  `%s`%s\n",
 			x.File, x.Line, strings.ToUpper(x.Severity), x.Title, x.RuleID, approx)
 		if r := strings.TrimSpace(x.Rationale); r != "" {
-			fmt.Fprintf(&b, "%s\n", r)
+			fmt.Fprintf(b, "%s\n", r)
 		}
 		if fix := strings.TrimRight(x.SuggestedFix, "\n"); strings.TrimSpace(fix) != "" {
-			fmt.Fprintf(&b, "\n```diff\n%s\n```\n", fix)
+			fmt.Fprintf(b, "\n```diff\n%s\n```\n", fix)
 		}
 	}
-	return b.String()
 }
 
 func renderText(f []model.PositionedFinding, dropped []model.Dropped) string {
